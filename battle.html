@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle - TrotFolks</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+        /* ==== MENU ==== */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            z-index: 1000;
+            transition: background 0.3s;
+        }
+        .top-nav.scrolled {
+            background: rgba(0, 0, 0, 0.95);
+        }
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            text-decoration: none;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            flex: 1;
+            justify-content: center;
+        }
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+            padding: 8px 12px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .nav-link:hover {
+            opacity: 0.8;
+        }
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+        }
+        .trot-coins {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #FFD700;
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid #FFA500;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        /* ==== HERO ==== */
+        .hero {
+            height: 60vh;
+            background: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') no-repeat center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            position: relative;
+            margin-top: 70px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 300;
+            margin: 0 0 16px;
+            letter-spacing: -0.02em;
+        }
+        .hero p {
+            font-size: 20px;
+            margin: 0 0 32px;
+            opacity: 0.9;
+        }
+        .cta-button {
+            background: #000;
+            color: #fff;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 32px;
+            font-size: 18px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .cta-button:hover {
+            background: #333;
+        }
+        /* ==== CONTENT ==== */
+        .main-content {
+            padding: 80px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        .section-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 64px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 12px 24px;
+            border-radius: 24px;
+            transition: color 0.2s, background 0.2s;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            color: #000;
+            background: #f5f5f7;
+        }
+        .tab-btn:hover {
+            color: #000;
+            background: #f0f0f0;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* FRIENDS TAB */
+        .friends-search-section {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .friends-search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 16px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background: #f9f9f9;
+            transition: border 0.2s;
+        }
+        .friends-search-input:focus {
+            outline: none;
+            border-color: #000;
+            background: #fff;
+        }
+        .friends-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .friend-row {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .friend-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        .friend-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+        }
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .friend-info h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin: 0 0 2px;
+        }
+        .friend-info p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+        .status-online {
+            color: #4CAF50;
+            font-weight: 500;
+        }
+        .status-offline {
+            color: #666;
+            font-weight: 500;
+        }
+        .battle-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .battle-btn:hover {
+            background: #333;
+        }
+        /* FRIEND DETAILS MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 40px;
+            border-radius: 24px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+            animation: slideUp 0.3s;
+        }
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close:hover {
+            color: #000;
+        }
+        .pet-details {
+            text-align: center;
+        }
+        .pet-details img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .pet-details h2 {
+            font-size: 28px;
+            font-weight: 300;
+            margin: 0 0 16px;
+        }
+        .pet-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: #f5f5f7;
+            border-radius: 12px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 500;
+            color: #000;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+        /* BATTLE DETAILS MODAL */
+        .battle-details {
+            text-align: center;
+        }
+        .battle-details h2 {
+            font-size: 28px;
+            font-weight: 300;
+            margin: 0 0 16px;
+        }
+        .battle-details p {
+            font-size: 16px;
+            color: #666;
+            margin: 0 0 24px;
+        }
+        .battle-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .battle-details .key-moment {
+            font-size: 16px;
+            font-style: italic;
+            color: #666;
+            margin: 16px 0;
+            text-align: left;
+        }
+        /* NEARBY PLAYERS TAB */
+        .search-section {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 16px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background: #f9f9f9;
+            transition: border 0.2s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #000;
+            background: #fff;
+        }
+        .map-container {
+            height: 400px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 32px;
+        }
+        #nearbyMap {
+            width: 100%;
+            height: 100%;
+        }
+        .nearby-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        .nearby-card {
+            background: #f5f5f7;
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .nearby-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+        }
+        .nearby-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .nearby-info h3 {
+            font-size: 20px;
+            font-weight: 500;
+            margin: 0 0 4px;
+        }
+        .nearby-info p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+        .challenge-btn {
+            background: #007AFF;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-left: auto;
+        }
+        .challenge-btn:hover {
+            background: #0056cc;
+        }
+        /* BATTLE HISTORY TAB */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .history-item {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .history-item:hover {
+            transform: translateY(-2px);
+        }
+        .history-details h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin: 0 0 4px;
+        }
+        .history-details p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+        .history-result {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+        .history-result.win {
+            background: #4CAF50;
+            color: #fff;
+        }
+        .history-result.loss {
+            background: #f44336;
+            color: #fff;
+        }
+        @media (max-width: 768px) {
+            .hero {
+                height: 50vh;
+                margin-top: 60px;
+            }
+            .hero h1 {
+                font-size: 36px;
+            }
+            .hero p {
+                font-size: 18px;
+            }
+            .main-content {
+                padding: 40px 16px;
+            }
+            .section-tabs {
+                gap: 16px;
+                margin-bottom: 48px;
+            }
+            .tab-btn {
+                font-size: 16px;
+                padding: 8px 16px;
+            }
+            .map-container {
+                height: 300px;
+            }
+            .friends-list, .nearby-list {
+                gap: 16px;
+            }
+            .friend-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .battle-btn {
+                align-self: flex-end;
+                margin-left: 0;
+            }
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .history-result {
+                align-self: flex-end;
+            }
+            .nav-links {
+                gap: 16px;
+            }
+            .top-nav {
+                padding: 12px 12px;
+            }
+            .trot-coins {
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                padding: 24px;
+            }
+            .pet-stats, .battle-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- MENU -->
+    <nav class="top-nav" id="topNav">
+        <a href="index.html" class="brand-name" onclick="goHome(event)">TrotFolks</a>
+        <div class="nav-links">
+            <a href="mypet.html" class="nav-link">My Pet</a>
+            <a href="battle.html" class="nav-link active">Battle</a>
+            <a href="shop.html" class="nav-link">Shop</a>
+            <a href="account.html" class="nav-link">Account</a>
+        </div>
+        <div class="trot-coins">
+            <span>🪙</span>
+            1,234 Trot Coins
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Enter the Arena</h1>
+            <p>Challenge friends, discover rivals, and build your battle legacy.</p>
+            <button class="cta-button" onclick="switchTab('friends')">Find Opponent</button>
+        </div>
+    </section>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="section-tabs">
+                <button class="tab-btn active" onclick="switchTab('friends')">Friends</button>
+                <button class="tab-btn" onclick="switchTab('nearby')">Nearby Players</button>
+                <button class="tab-btn" onclick="switchTab('history')">Battle History</button>
+            </div>
+
+            <!-- FRIENDS TAB -->
+            <div id="friends" class="tab-content active">
+                <div class="friends-search-section">
+                    <input type="text" class="friends-search-input" placeholder="Search friends..." oninput="searchFriends(event)">
+                </div>
+                <div class="friends-list" id="friendsList">
+                    <!-- Friends will be populated here -->
+                </div>
+            </div>
+
+            <!-- NEARBY PLAYERS TAB -->
+            <div id="nearby" class="tab-content">
+                <div class="search-section">
+                    <input type="text" class="search-input" placeholder="Search nearby players..." oninput="searchNearby(event)">
+                </div>
+                <div class="map-container">
+                    <div id="nearbyMap"></div>
+                </div>
+                <div class="nearby-list">
+                    <div class="nearby-card">
+                        <div class="nearby-avatar">👤</div>
+                        <div class="nearby-info">
+                            <h3>David Kim</h3>
+                            <p>1.2 km away • Level 40</p>
+                        </div>
+                        <button class="challenge-btn" onclick="challengeNearby('David Kim')">Challenge</button>
+                    </div>
+                    <div class="nearby-card">
+                        <div class="nearby-avatar">👤</div>
+                        <div class="nearby-info">
+                            <h3>Eva Garcia</h3>
+                            <p>0.8 km away • Level 46</p>
+                        </div>
+                        <button class="challenge-btn" onclick="challengeNearby('Eva Garcia')">Challenge</button>
+                    </div>
+                    <div class="nearby-card">
+                        <div class="nearby-avatar">👤</div>
+                        <div class="nearby-info">
+                            <h3>Frank Wilson</h3>
+                            <p>2.1 km away • Level 35</p>
+                        </div>
+                        <button class="challenge-btn" onclick="challengeNearby('Frank Wilson')">Challenge</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BATTLE HISTORY TAB -->
+            <div id="history" class="tab-content">
+                <div class="history-list" id="historyList">
+                    <!-- Battles will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FRIEND DETAILS MODAL -->
+    <div id="friendModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="pet-details" id="petDetails">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- BATTLE DETAILS MODAL -->
+    <div id="battleModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeBattleModal()">&times;</span>
+            <div class="battle-details" id="battleDetails">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample friends data (10 friends)
+        const friendsData = [
+            { name: 'Alice Johnson', level: 42, cp: 2500, distance: '1,247 km', status: 'online', time: '5 min ago', avatar: '👤', petName: 'Max', petImage: 'https://img.freepik.com/premium-photo/robot-pet-with-robot-person_982952-313.jpg' },
+            { name: 'Bob Smith', level: 45, cp: 3100, distance: '2,150 km', status: 'offline', time: '2 hours ago', avatar: '👤', petName: 'Luna', petImage: 'https://tse1.mm.bing.net/th/id/OIP.PzL5pP3A_LnMw4UP_0zpUgHaHa?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3' },
+            { name: 'Charlie Lee', level: 38, cp: 1900, distance: '856 km', status: 'online', time: '12 min ago', avatar: '👤', petName: 'Rex', petImage: 'https://img.freepik.com/premium-photo/portrait-japanese-akita-inu-dog-white-background_1308157-34226.jpg?w=2000' },
+            { name: 'Diana Wong', level: 41, cp: 2200, distance: '1,500 km', status: 'offline', time: '1 day ago', avatar: '👤', petName: 'Zara', petImage: 'https://thumbs.dreamstime.com/b/ai-generated-illustration-corgi-dog-robotic-style-costume-ai-generated-illustration-corgi-dog-robotic-style-302662130.jpg' },
+            { name: 'Ethan Davis', level: 47, cp: 3400, distance: '3,200 km', status: 'online', time: '3 min ago', avatar: '👤', petName: 'Bolt', petImage: 'https://tse1.mm.bing.net/th/id/OIP.8V1QWCGoe1seCUq8F6phzwHaHa?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3' },
+            { name: 'Fiona Patel', level: 39, cp: 2100, distance: '980 km', status: 'offline', time: '4 hours ago', avatar: '👤', petName: 'Nova', petImage: 'https://img.freepik.com/premium-photo/robot-pet-with-robot-person_982952-313.jpg' },
+            { name: 'George Ramirez', level: 43, cp: 2800, distance: '1,800 km', status: 'online', time: '8 min ago', avatar: '👤', petName: 'Spike', petImage: 'https://tse1.mm.bing.net/th/id/OIP.PzL5pP3A_LnMw4UP_0zpUgHaHa?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3' },
+            { name: 'Hannah Kim', level: 40, cp: 2300, distance: '1,100 km', status: 'offline', time: '6 hours ago', avatar: '👤', petName: 'Echo', petImage: 'https://img.freepik.com/premium-photo/portrait-japanese-akita-inu-dog-white-background_1308157-34226.jpg?w=2000' },
+            { name: 'Ian Thompson', level: 44, cp: 2900, distance: '2,300 km', status: 'online', time: '1 min ago', avatar: '👤', petName: 'Rogue', petImage: 'https://thumbs.dreamstime.com/b/ai-generated-illustration-corgi-dog-robotic-style-costume-ai-generated-illustration-corgi-dog-robotic-style-302662130.jpg' },
+            { name: 'Julia Chen', level: 37, cp: 1800, distance: '750 km', status: 'offline', time: '3 days ago', avatar: '👤', petName: 'Shadow', petImage: 'https://tse1.mm.bing.net/th/id/OIP.8V1QWCGoe1seCUq8F6phzwHaHa?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3' }
+        ];
+
+        // Sample battles data
+        const battlesData = [
+            { id: 1, opponent: 'Alice Johnson', date: 'Nov 8, 2025', duration: '5 min', result: 'win', yourPet: 'Max', oppPet: 'Luna', yourScore: 1500, oppScore: 1200, keyMoment: 'Critical hit with Thunderbolt!' },
+            { id: 2, opponent: 'Bob Smith', date: 'Nov 7, 2025', duration: '7 min', result: 'loss', yourPet: 'Max', oppPet: 'Spike', yourScore: 1100, oppScore: 1600, keyMoment: 'Missed final attack.' },
+            { id: 3, opponent: 'Charlie Lee', date: 'Nov 6, 2025', duration: '4 min', result: 'win', yourPet: 'Max', oppPet: 'Rex', yourScore: 1800, oppScore: 900, keyMoment: 'Perfect combo finish!' }
+        ];
+
+        function renderFriends(friends) {
+            const list = document.getElementById('friendsList');
+            list.innerHTML = friends.map(friend => `
+                <div class="friend-row" onclick="showFriendDetails('${friend.name}')">
+                    <div class="friend-left">
+                        <div class="friend-avatar">${friend.avatar}</div>
+                        <div class="friend-info">
+                            <h3>${friend.name}</h3>
+                            <p>Level ${friend.level} • ${friend.cp} CP</p>
+                            <p class="${friend.status === 'online' ? 'status-online' : 'status-offline'}">${friend.status.toUpperCase()} • ${friend.time}</p>
+                        </div>
+                    </div>
+                    <button class="battle-btn" onclick="event.stopPropagation(); challengeFriend('${friend.name}')">Battle</button>
+                </div>
+            `).join('');
+        }
+
+        function renderHistory(battles) {
+            const list = document.getElementById('historyList');
+            list.innerHTML = battles.map(battle => `
+                <div class="history-item" onclick="showBattleDetails(${battle.id})">
+                    <div class="history-details">
+                        <h3>vs ${battle.opponent}</h3>
+                        <p>${battle.date} • ${battle.duration} battle</p>
+                    </div>
+                    <span class="history-result ${battle.result}">${battle.result === 'win' ? 'Victory' : 'Defeat'}</span>
+                </div>
+            `).join('');
+        }
+
+        function searchFriends(event) {
+            const query = event.target.value.toLowerCase();
+            const filtered = friendsData.filter(friend => friend.name.toLowerCase().includes(query));
+            renderFriends(filtered);
+        }
+
+        function showFriendDetails(name) {
+            const friend = friendsData.find(f => f.name === name);
+            if (friend) {
+                document.getElementById('petDetails').innerHTML = `
+                    <img src="${friend.petImage}" alt="${friend.petName}">
+                    <h2>${friend.petName}</h2>
+                    <div class="pet-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${friend.cp}</div>
+                            <div class="stat-label">Combat Power (CP)</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${friend.distance}</div>
+                            <div class="stat-label">Distance Walked</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">Level ${friend.level}</div>
+                            <div class="stat-label">Pet Level</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">Active</div>
+                            <div class="stat-label">Status</div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('friendModal').style.display = 'block';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('friendModal').style.display = 'none';
+        }
+
+        function showBattleDetails(id) {
+            const battle = battlesData.find(b => b.id === id);
+            if (battle) {
+                document.getElementById('battleDetails').innerHTML = `
+                    <h2>Battle vs ${battle.opponent}</h2>
+                    <p>${battle.date} • ${battle.duration}</p>
+                    <div class="battle-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${battle.yourPet}</div>
+                            <div class="stat-label">Your Pet</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${battle.oppPet}</div>
+                            <div class="stat-label">Opponent's Pet</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${battle.yourScore}</div>
+                            <div class="stat-label">Your Score</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${battle.oppScore}</div>
+                            <div class="stat-label">Opponent Score</div>
+                        </div>
+                    </div>
+                    <p class="key-moment"><strong>Key Moment:</strong> ${battle.keyMoment}</p>
+                    <span class="history-result ${battle.result}" style="display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 16px; font-weight: 600;">${battle.result === 'win' ? 'Victory' : 'Defeat'}</span>
+                `;
+                document.getElementById('battleModal').style.display = 'block';
+            }
+        }
+
+        function closeBattleModal() {
+            document.getElementById('battleModal').style.display = 'none';
+        }
+
+        // NEARBY PLAYERS TAB
+        let nearbyMap;
+        function initMap() {
+            nearbyMap = L.map('nearbyMap').setView([37.7749, -122.4194], 13); // Example: San Francisco
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(nearbyMap);
+
+            // Add markers for nearby players (example coordinates)
+            const players = [
+                { name: 'David Kim', coords: [37.7749, -122.4194], icon: '👤' },
+                { name: 'Eva Garcia', coords: [37.7849, -122.4094], icon: '👤' },
+                { name: 'Frank Wilson', coords: [37.7649, -122.4294], icon: '👤' }
+            ];
+
+            players.forEach(player => {
+                const customIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: player.icon,
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15]
+                });
+                L.marker(player.coords, { icon: customIcon }).addTo(nearbyMap)
+                    .bindPopup(`<b>${player.name}</b><br>Challenge to battle?`)
+                    .openPopup();
+            });
+        }
+
+        function searchNearby(event) {
+            console.log('Searching for:', event.target.value);
+        }
+
+        function challengeNearby(name) {
+            alert(`Challenging ${name} to battle!`);
+        }
+
+        // BATTLE HISTORY
+        function switchTab(t) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(t).classList.add('active');
+            event.target.classList.add('active');
+
+            if (t === 'nearby' && !nearbyMap) {
+                setTimeout(initMap, 100);
+            }
+        }
+
+        function navigateTo(s) {
+            document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            const p = {'shop': 'shop.html', 'my-pet': 'mypet.html', 'battle': 'battle.html', 'account': 'account.html'};
+            if (p[s]) window.location.href = p[s];
+        }
+
+        function goHome(e) {
+            e.preventDefault();
+            window.location.href = 'index.html';
+        }
+
+        function challengeFriend(name) {
+            alert(`Challenging ${name} to battle!`);
+        }
+
+        // Initialize friends list and history
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFriends(friendsData);
+            renderHistory(battlesData);
+        });
+
+        // Scroll effect for nav
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('topNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Modal close on outside click
+        window.onclick = function(event) {
+            const friendModal = document.getElementById('friendModal');
+            const battleModal = document.getElementById('battleModal');
+            if (event.target === friendModal) {
+                closeModal();
+            }
+            if (event.target === battleModal) {
+                closeBattleModal();
+            }
+        }
+    </script>
+</body>
+</html>
