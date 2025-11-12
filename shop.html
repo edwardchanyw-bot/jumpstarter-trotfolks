@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - TrotFolks</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+        /* Navigation */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            z-index: 1000;
+            transition: background 0.3s;
+        }
+        .top-nav.scrolled {
+            background: rgba(0, 0, 0, 0.95);
+        }
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            text-decoration: none;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            flex: 1;
+            justify-content: center;
+        }
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+        .nav-link:hover {
+            opacity: 0.8;
+        }
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+        }
+        .trot-coins {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #FFD700;
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid #FFA500;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        /* ==== HERO ==== */
+        .hero {
+            height: 60vh;
+            background: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            position: relative;
+            margin-top: 70px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 300;
+            margin: 0 0 16px;
+            letter-spacing: -0.02em;
+        }
+        .hero p {
+            font-size: 20px;
+            margin: 0 0 32px;
+            opacity: 0.9;
+        }
+        .cta-button {
+            background: #000;
+            color: #fff;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 32px;
+            font-size: 18px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .cta-button:hover {
+            background: #333;
+        }
+        /* ==== SECTIONS ==== */
+        .section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section h1 {
+            font-size: 48px;
+            font-weight: 300;
+            text-align: center;
+            margin: 0 0 64px;
+            letter-spacing: -0.02em;
+        }
+        .section-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 64px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 12px 24px;
+            border-radius: 24px;
+            transition: color 0.2s, background 0.2s;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            color: #000;
+            background: #f5f5f7;
+        }
+        .tab-btn:hover {
+            color: #000;
+            background: #f0f0f0;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .packages-grid, .subscriptions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 32px;
+        }
+        .item-card {
+            background: #f5f5f7;
+            border-radius: 24px;
+            padding: 40px 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+        }
+        .item-card.featured {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 100%);
+        }
+        .item-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        .item-name {
+            font-size: 28px;
+            font-weight: 500;
+            margin: 0 0 16px;
+            color: #000;
+        }
+        .item-description {
+            font-size: 16px;
+            color: #666;
+            margin: 0 0 16px;
+            line-height: 1.5;
+        }
+        .item-cost {
+            font-size: 32px;
+            font-weight: 700;
+            color: #000;
+            margin: 0 0 24px;
+        }
+        .purchase-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+            max-width: 200px;
+        }
+        .purchase-btn:hover {
+            background: #333;
+        }
+        .subscription-note {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .recommended-badge {
+            position: absolute;
+            top: -8px;
+            right: 20px;
+            background: #007AFF;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        @media (max-width: 768px) {
+            .hero {
+                height: 50vh;
+                margin-top: 60px;
+            }
+            .hero h1 {
+                font-size: 36px;
+            }
+            .hero p {
+                font-size: 18px;
+            }
+            .section {
+                padding: 40px 16px;
+            }
+            .section h1 {
+                font-size: 36px;
+            }
+            .section-tabs {
+                gap: 16px;
+            }
+            .tab-btn {
+                font-size: 16px;
+                padding: 8px 16px;
+            }
+            .packages-grid, .subscriptions-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .item-card {
+                padding: 32px 20px;
+            }
+            .item-name {
+                font-size: 24px;
+            }
+            .item-cost {
+                font-size: 28px;
+            }
+            .nav-links {
+                gap: 16px;
+            }
+            .top-nav {
+                padding: 12px 12px;
+            }
+            .trot-coins {
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="top-nav" id="topNav">
+        <a href="index.html" class="brand-name" onclick="goHome(event)">TrotFolks</a>
+        <div class="nav-links">
+            <a href="mypet.html" class="nav-link">My Pet</a>
+            <a href="battle.html" class="nav-link">Battle</a>
+            <a href="shop.html" class="nav-link active">Shop</a>
+            <a href="account.html" class="nav-link">Account</a>
+        </div>
+        <div class="trot-coins">
+            <span>🪙</span>
+            1,234 Trot Coins
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Shop the Future</h1>
+            <p>Discover packages and plans tailored for your robotic companion's adventures.</p>
+            <button class="cta-button" onclick="switchTab('packages')">Browse Packages</button>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-tabs">
+            <button class="tab-btn active" onclick="switchTab('packages')">Robotic Packages</button>
+            <button class="tab-btn" onclick="switchTab('subscriptions')">Subscription Plans</button>
+        </div>
+
+        <!-- ROBOTIC PACKAGES -->
+        <div id="packages" class="tab-content active">
+            <div class="packages-grid">
+                <div class="item-card">
+                    <div class="item-icon" style="background: #4CAF50; color: #fff;">🏠</div>
+                    <h3 class="item-name">Indoor Package</h3>
+                    <p class="item-description">Your perfect home companion with advanced facial recognition and interactive gestures like waving.</p>
+                    <p class="item-cost">$1199 -> $799</p>
+                    <button class="purchase-btn" onclick="purchasePackage('Indoor', 799)">Purchase</button>
+                </div>
+                <div class="item-card">
+                    <div class="item-icon" style="background: #2196F3; color: #fff;">🌳</div>
+                    <h3 class="item-name">Outdoor Package</h3>
+                    <p class="item-description">Adventure-ready with step-tracking and outdoor interactions like high-fives on the go.</p>
+                    <p class="item-cost">$6,880 -> $5,599</p>
+                    <button class="purchase-btn" onclick="purchasePackage('Outdoor', 149)">Purchase</button>
+                </div>
+            </div>
+            <div class="packages-grid">
+                <div class="item-card featured">
+                    <div class="recommended-badge">Recommended</div>
+                    <div class="item-icon" style="background: #FF9800; color: #fff;">🎁</div>
+                    <h3 class="item-name">All-in-One Package</h3>
+                    <p class="item-description">The ultimate bundle: Indoor comfort meets outdoor exploration for unrestricted access to all features.</p>
+                    <p class="item-cost">$7,499 -> $6,099</p>
+                    <button class="purchase-btn" onclick="purchasePackage('All-in-One', 6099)">Purchase</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUBSCRIPTION PLANS -->
+        <div id="subscriptions" class="tab-content">
+            <p class="subscription-note">Unlock online battles and community features with our flexible subscription plans. Compete, connect, and conquer.</p>
+            <div class="subscriptions-grid">
+                <div class="item-card">
+                    <div class="item-icon" style="background: #9C27B0; color: #fff;">📅</div>
+                    <h3 class="item-name">Monthly</h3>
+                    <p class="item-description">Flexible access for casual battlers.</p>
+                    <p class="item-cost">$99 / month</p>
+                    <button class="purchase-btn" onclick="subscribePlan('Monthly', 99)">Subscribe</button>
+                </div>
+                <div class="item-card">
+                    <div class="item-icon" style="background: #FF5722; color: #fff;">6️⃣</div>
+                    <h3 class="item-name">Three Months</h3>
+                    <p class="item-description">Save 20% and gear up for mid-term challenges.</p>
+                    <p class="item-cost">$199 / 3 months</p>
+                    <button class="purchase-btn" onclick="subscribePlan('Three Months', 199)">Subscribe</button>
+                </div>
+            </div>
+            <div class="subscriptions-grid">
+                <div class="item-card featured">
+                    <div class="recommended-badge">Best Value</div>
+                    <div class="item-icon" style="background: #607D8B; color: #fff;">📆</div>
+                    <h3 class="item-name">Yearly</h3>
+                    <p class="item-cost">$599 / year</p>
+                    <button class="purchase-btn" onclick="subscribePlan('Yearly', 599)">Subscribe</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function switchTab(t) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(t).classList.add('active');
+            event.target.classList.add('active');
+        }
+        function goHome(e) {
+            e.preventDefault();
+            window.location.href = 'index.html';
+        }
+        function purchasePackage(name, price) {
+            alert(`Purchasing ${name} for $${price}!`);
+        }
+        function subscribePlan(name, price) {
+            alert(`Subscribing to ${name} for $${price}!`);
+        }
+
+        // Scroll effect for nav
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('topNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
