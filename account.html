@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account - TrotFolks</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+        /* ==== MENU ==== */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            z-index: 1000;
+            transition: background 0.3s;
+        }
+        .top-nav.scrolled {
+            background: rgba(0, 0, 0, 0.95);
+        }
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            text-decoration: none;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            flex: 1;
+            justify-content: center;
+        }
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+            padding: 8px 12px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .nav-link:hover {
+            opacity: 0.8;
+        }
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+        }
+        .trot-coins {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #FFD700;
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid #FFA500;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .trot-coins .icon {
+            font-size: 16px;
+        }
+        /* ==== HERO ==== */
+        .hero {
+            height: 60vh;
+            background: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            position: relative;
+            margin-top: 70px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 300;
+            margin: 0 0 16px;
+            letter-spacing: -0.02em;
+        }
+        .hero p {
+            font-size: 20px;
+            margin: 0 0 32px;
+            opacity: 0.9;
+        }
+        /* ==== CONTENT ==== */
+        .main-content {
+            padding: 80px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        .container {
+            background: #fff;
+            padding: 48px;
+            border-radius: 24px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            animation: slideUp 0.5s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: 300;
+            text-align: center;
+            margin: 0 0 32px;
+            letter-spacing: -0.02em;
+            color: #000;
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            color: #000;
+            margin-bottom: 8px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 16px 18px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background: #f9f9f9;
+            transition: border 0.2s, background 0.2s;
+            box-sizing: border-box;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #000;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+        .login-btn {
+            width: 100%;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        .login-btn:hover {
+            background: #333;
+        }
+        .divider {
+            margin: 32px 0;
+            text-align: center;
+            position: relative;
+            color: #666;
+            font-size: 16px;
+        }
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #eee;
+            z-index: 1;
+        }
+        .divider span {
+            background: #fff;
+            padding: 0 16px;
+            z-index: 2;
+            position: relative;
+        }
+        .social-login {
+            margin-top: 24px;
+            display: flex;
+            gap: 16px;
+        }
+        .social-btn {
+            flex: 1;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: border 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .social-btn:hover {
+            border-color: #000;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        .social-btn img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+        .signup-link {
+            text-align: center;
+            margin-top: 32px;
+            font-size: 16px;
+            color: #666;
+        }
+        .signup-link a {
+            color: #000;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .hero {
+                height: 50vh;
+                margin-top: 60px;
+            }
+            .hero h1 {
+                font-size: 36px;
+            }
+            .hero p {
+                font-size: 18px;
+            }
+            .main-content {
+                padding: 40px 16px;
+            }
+            .container {
+                padding: 32px 24px;
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .social-login {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .nav-links {
+                gap: 16px;
+            }
+            .top-nav {
+                padding: 12px 12px;
+            }
+            .trot-coins {
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- MENU -->
+    <nav class="top-nav" id="topNav">
+        <a href="index.html" class="brand-name" onclick="goHome(event)">TrotFolks</a>
+        <div class="nav-links">
+            <a href="mypet.html" class="nav-link">My Pet</a>
+            <a href="battle.html" class="nav-link">Battle</a>
+            <a href="shop.html" class="nav-link">Shop</a>
+            <a href="account.html" class="nav-link active">Account</a>
+        </div>
+        <div class="trot-coins">
+            <span class="icon">🪙</span>
+            1,234 Trot Coins
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome Back</h1>
+            <p>Sign in to your TrotFolks account to continue your adventures.</p>
+        </div>
+    </section>
+
+    <div class="main-content">
+        <div class="container">
+            <h1>Log In</h1>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="username">Username or Email</label>
+                    <input type="text" id="username" class="form-input" placeholder="Enter your username or email" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="login-btn">Log In</button>
+            </form>
+
+            <div class="divider"><span>or continue with</span></div>
+
+            <div class="social-login">
+                <button class="social-btn">
+                    <img src="https://www.google.com/favicon.ico" alt="Google">
+                    Google
+                </button>
+                <button class="social-btn">
+                    <!-- Official Facebook "f" logo (clean, modern, white on blue) -->
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
+                    Facebook
+                </button>
+            </div>
+
+            <p class="signup-link">
+                Don't have an account? <a href="#" onclick="alert('Sign up feature coming soon!')">Sign Up</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(s){
+            document.querySelectorAll('.nav-link').forEach(b=>b.classList.remove('active'));
+            event.target.classList.add('active');
+            const p={'shop':'shop.html','my-pet':'mypet.html','battle':'battle.html','account':'account.html'};
+            if(p[s]) window.location.href=p[s];
+        }
+        function goHome(e){e.preventDefault();window.location.href='index.html';}
+
+        // Login form handler (demo)
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (username && password) {
+                alert(`Logging in as: ${username}`);
+                // In real app: send to backend
+            }
+        });
+
+        // Scroll effect for nav
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('topNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
