@@ -1,1 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrotFolks - Robotic Pets for Active Lives</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+        /* Navigation */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            z-index: 1000;
+            transition: background 0.3s;
+        }
+        .top-nav.scrolled {
+            background: rgba(0, 0, 0, 0.95);
+        }
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            text-decoration: none;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            flex: 1;
+            justify-content: center;
+        }
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+        .nav-link:hover {
+            opacity: 0.8;
+        }
+        .trot-coins {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #FFD700;
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid #FFA500;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        .hero h1 {
+            font-size: 64px;
+            font-weight: 300;
+            margin: 0 0 16px;
+            letter-spacing: -0.02em;
+        }
+        .hero p {
+            font-size: 24px;
+            margin: 0 0 32px;
+            opacity: 0.9;
+        }
+        .cta-button {
+            background: #000;
+            color: #fff;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 32px;
+            font-size: 18px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+        .cta-button:hover {
+            background: #333;
+        }
+        /* Products Section */
+        .products {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 80px;
+        }
+        .product-card {
+            text-align: center;
+        }
+        .product-image {
+            width: 100%;
+            height: 400px;
+            background: #f5f5f7;
+            border-radius: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 24px;
+        }
+        .product h2 {
+            font-size: 40px;
+            font-weight: 300;
+            margin: 0 0 8px;
+        }
+        .product p {
+            font-size: 20px;
+            color: #666;
+            margin: 0 0 24px;
+        }
+        /* Mission Section */
+        .mission {
+            padding: 80px 20px;
+            background: #f5f5f7;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .mission h2 {
+            font-size: 48px;
+            font-weight: 300;
+            margin: 0 0 24px;
+        }
+        .mission p {
+            font-size: 18px;
+            color: #333;
+            margin: 0 0 16px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* Features Section */
+        .features {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .features h2 {
+            font-size: 48px;
+            font-weight: 300;
+            text-align: center;
+            margin: 0 0 64px;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 48px;
+            justify-items: center;
+        }
+        .feature {
+            text-align: center;
+            max-width: 300px;
+        }
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .feature h3 {
+            font-size: 24px;
+            font-weight: 500;
+            margin: 0 0 8px;
+        }
+        .feature p {
+            color: #666;
+            margin: 0;
+        }
+        /* Footer */
+        .footer {
+            background: #000;
+            color: #fff;
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .footer-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+        .copyright {
+            color: #666;
+            font-size: 12px;
+        }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 48px; }
+            .hero p { font-size: 20px; }
+            .products { grid-template-columns: 1fr; gap: 40px; }
+            .nav-links { gap: 16px; }
+            .top-nav { padding: 12px 12px; }
+            .trot-coins { font-size: 13px; padding: 6px 10px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="top-nav" id="topNav">
+        <a href="#" class="brand-name" onclick="goHome(event)">TrotFolks</a>
+        <div class="nav-links">
+            <a href="mypet.html" class="nav-link">My Pet</a>
+            <a href="battle.html" class="nav-link">Battle</a>
+            <a href="shop.html" class="nav-link">Shop</a>
+            <a href="account.html" class="nav-link">Account</a>
+        </div>
+        <div class="trot-coins">
+            <span>🪙</span>
+            1,234 Trot Coins
+        </div>
+    </nav>
 
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Robotic Pets. Real Companions.</h1>
+            <p>Empower your active lifestyle with intelligent robotic pets designed for indoor comfort and outdoor adventure.</p>
+            <a href="shop.html" class="cta-button">Explore Products</a>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products">
+        <div class="product-card">
+            <div class="product-image">
+                <img src="https://www.mercurynews.com/wp-content/uploads/2018/09/SJM-L-SONY-0913-13.jpg?w=1280" alt="Sitting Interaction">
+            </div>
+            <h2>Latest Interactions: Sitting</h2>
+            <p>Discover the serene 'Sitting' pose—your pet's way of inviting quiet moments of connection and restful bonding indoors.</p>
+            <a href="mypet.html#interactions" class="cta-button">Learn More</a>
+        </div>
+        <div class="product-card">
+            <div class="product-image">
+                <img src="https://tse1.mm.bing.net/th/id/OIP.PzL5pP3A_LnMw4UP_0zpUgHaHa?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Fire Fox Skin">
+            </div>
+            <h2>Newest Skin: Fire Fox</h2>
+            <p>Ignite your pet's style with the fiery 'Fire Fox' skin—bold, vibrant, and perfect for standing out in any adventure.</p>
+            <a href="mypet.html#skins" class="cta-button">Learn More</a>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="mission">
+        <h2>Our Mission</h2>
+        <p>At TrotFolks, we believe in blending technology with the joy of companionship to inspire healthier, more active lives.</p>
+        <p>Our robotic pets aren't just machines—they're loyal partners that motivate you to move, connect, and thrive.</p>
+        <p>From urban strolls to epic battles, we're redefining what it means to have a pet in the modern world.</p>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2>Why TrotFolks?</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>Seamless Integration</h3>
+                <p>Sync with your devices for real-time health tracking and shared adventures.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🏆</div>
+                <h3>Competitive Fun</h3>
+                <p>Engage in online battles and earn rewards with your robotic companion.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="privacy.html" class="footer-link">Privacy Policy</a>
+            <a href="terms.html" class="footer-link">Terms of Service</a>
+            <a href="support.html" class="footer-link">Support</a>
+            <a href="shop.html" class="footer-link">Shop</a>
+        </div>
+        <p class="copyright">&copy; 2025 TrotFolks. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function goHome(e) {
+            e.preventDefault();
+            window.location.href = 'index.html';
+        }
+        // Simple scroll effect for nav
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('topNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
